@@ -1,3 +1,5 @@
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbzl4DGe9-ERuFeAB7sLS8ZSCs2ZUadhynesSxGMBk2Di03N43PZD4iF83863x7i5assFA/exec';
+
 let expenses = [];
 
 const personSelect = document.getElementById('person-select');
@@ -5,6 +7,17 @@ const expenseNameInput = document.getElementById('expense-name');
 const expenseAmountInput = document.getElementById('expense-amount');
 const expenseTypeSelect = document.getElementById('expense-type');
 const addExpenseBtn = document.getElementById('add-expense-btn');
+
+// Load existing expenses when the page opens
+fetch(SHEET_URL)
+  .then(function(response) { return response.json(); })
+  .then(function(data) {
+    expenses = data;
+    updateDisplay();
+  })
+  .catch(function(error) {
+    console.error('Error loading expenses:', error);
+  });
 
 addExpenseBtn.addEventListener('click', function() {
   const person = personSelect.value;
@@ -17,12 +30,23 @@ addExpenseBtn.addEventListener('click', function() {
     return;
   }
 
-  expenses.push({ person: person, name: name, amount: amount, type: type });
+  const newExpense = { person: person, name: name, amount: amount, type: type };
+
+  // Send it to Google Sheets
+  fetch(SHEET_URL, {
+    method: 'POST',
+    body: JSON.stringify(newExpense)
+  })
+    .then(function() {
+      expenses.push(newExpense);
+      updateDisplay();
+    })
+    .catch(function(error) {
+      console.error('Error saving expense:', error);
+    });
 
   expenseNameInput.value = '';
   expenseAmountInput.value = '';
-
-  updateDisplay();
 });
 
 function updateDisplay() {
@@ -34,22 +58,19 @@ function updatePersonDisplay(person) {
   const list = document.getElementById(person + '-list');
   const totalEl = document.getElementById(person + '-total');
 
-  // Filter only this person's expenses
   const personExpenses = expenses.filter(function(e) {
     return e.person === person;
   });
 
-  // Rebuild their list
   list.innerHTML = '';
   personExpenses.forEach(function(e) {
     const li = document.createElement('li');
-    li.textContent = e.name + ' (' + e.type + '): ₹' + e.amount.toFixed(2);
+    li.textContent = e.name + ' (' + e.type + '): ₹' + parseFloat(e.amount).toFixed(2);
     list.appendChild(li);
   });
 
-  // Calculate their total
   const total = personExpenses.reduce(function(sum, e) {
-    return sum + e.amount;
+    return sum + parseFloat(e.amount);
   }, 0);
 
   totalEl.textContent = total.toFixed(2);
