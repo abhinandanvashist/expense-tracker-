@@ -43,7 +43,7 @@ function updatePersonDisplay(person) {
   list.innerHTML = '';
   personExpenses.forEach(function(e) {
     const li = document.createElement('li');
-    li.textContent = e.name + ' (' + e.type + '): $' + e.amount.toFixed(2);
+    li.textContent = e.name + ' (' + e.type + '): ₹' + e.amount.toFixed(2);
     list.appendChild(li);
   });
 
