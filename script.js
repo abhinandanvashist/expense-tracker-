@@ -9,7 +9,7 @@ const expenseTypeSelect = document.getElementById('expense-type');
 const addExpenseBtn = document.getElementById('add-expense-btn');
 
 // Load existing expenses when the page opens
-fetch(SHEET_URL)
+fetch(SHEET_URL, { cache: 'no-store' })
   .then(function(response) { return response.json(); })
   .then(function(data) {
     expenses = data;
