@@ -1,4 +1,4 @@
-javascript
+
 const SHEET_URL = 'https://script.google.com/macros/s/AKfycbyETDZZ3klcZdBYwLpoAWkjOcxxXBT7ouv6EsHYoUldiITYFqSxsLALMtFe8KH3V6UC/exec';
 
 let expenses = [];
